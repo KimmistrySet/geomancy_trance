@@ -4,6 +4,7 @@ from autogen import run_pipeline_from_file
 app = Flask(__name__)
 
 @app.route("/api/pipeline/sculpture_garden")
+
 def pipeline_sculpture_garden():
     data = run_pipeline_from_file("pipeline_sculpture_garden.json")
     return jsonify({"vertices": data})

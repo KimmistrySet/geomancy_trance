@@ -27,7 +27,7 @@ from nodes.math.VectorMatrixNode import VectorMatrixMultiplyNode
 from nodes.math.TransformNode import TransformNode
 from nodes.math.ScaleNode import ScaleNode
 from nodes.math.RotateNode import RotateNode
-from nodes.math.TranslateNode import TranslateNode
+from nodes.math.TranslaterNode import TranslaterNode
 from nodes.math.MirrorNode import MirrorNode
 # Add more math nodes here as needed
 
@@ -50,7 +50,7 @@ NODE_REGISTRY: Dict[str, Any] = {
     "TransformNode": TransformNode,
     "ScaleNode": ScaleNode,
     "RotateNode": RotateNode,
-    "TranslateNode": TranslateNode,
+    "TranslaterNode": TranslaterNode,
     "MirrorNode": MirrorNode,
     # Add other node types here
 }

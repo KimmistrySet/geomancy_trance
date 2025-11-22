@@ -23,6 +23,14 @@ def pipeline_sculpture_garden_multi():
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route("/api/pipeline/sculpture_garden_shift")
+def pipeline_sculpture_garden_shift():
+    try:
+        data = run_pipeline_from_file("pipeline_sculpture_garden_shift.json")
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Optional: root route so / doesn't 404
 @app.route("/")

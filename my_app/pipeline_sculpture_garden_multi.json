@@ -1,22 +1,20 @@
 {
   "nodes": [
-    { "type": "CubeNode", "id": "cube1" },
-    { "type": "NoiseNode", "id": "cube_noise", "params": { "scale": 0.2, "seed": 1 } },
-
-    { "type": "SphereNode", "id": "sphere1", "params": { "radius": 1.0, "segments": 12 } },
-    { "type": "NoiseNode", "id": "sphere_noise", "params": { "scale": 0.15, "seed": 2 } },
-
-    { "type": "PyramidNode", "id": "pyramid1", "params": { "height": 1.5 } },
-    { "type": "NoiseNode", "id": "pyramid_noise", "params": { "scale": 0.25, "seed": 3 } },
-
-    { "type": "CylinderNode", "id": "cylinder1", "params": { "radius": 1.0, "height": 2.0, "segments": 16 } },
-    { "type": "NoiseNode", "id": "cylinder_noise", "params": { "scale": 0.1, "seed": 4 } }
+    {"id": "grid1", "type": "GridNode", "params": {"nx": 6, "ny": 6, "spacing": 2}},
+    {"id": "cube1", "type": "CubeNode", "params": {"size": 1}},
+    {"id": "cylinder1", "type": "CylinderNode", "params": {"radius": 0.5, "height": 2, "segments": 12}},
+    {"id": "cone1", "type": "ConeNode", "params": {"radius": 0.5, "height": 1.5, "segments": 16}},
+    {"id": "rotate1", "type": "RotateNode", "params": {"axis": "z", "angle": 1.57}},
+    {"id": "scale1", "type": "ScaleNode", "params": {"sx": 1.2, "sy": 0.8, "sz": 1.0}},
+    {"id": "translate1", "type": "TranslaterNode", "params": {"tx": 0, "ty": 0, "tz": 2}}
   ],
   "connections": [
-    { "from": "cube1", "output": "Vertices", "to": "cube_noise", "input": "Vertices" },
-    { "from": "sphere1", "output": "Vertices", "to": "sphere_noise", "input": "Vertices" },
-    { "from": "pyramid1", "output": "Vertices", "to": "pyramid_noise", "input": "Vertices" },
-    { "from": "cylinder1", "output": "Vertices", "to": "cylinder_noise", "input": "Vertices" }
+    {"from": "grid1", "to": "cube1"},
+    {"from": "grid1", "to": "cylinder1"},
+    {"from": "grid1", "to": "cone1"},
+    {"from": "cube1", "to": "rotate1"},
+    {"from": "cylinder1", "to": "scale1"},
+    {"from": "cone1", "to": "translate1"}
   ],
-  "output_nodes": ["cube_noise", "sphere_noise", "pyramid_noise", "cylinder_noise"]
+  "output_nodes": ["rotate1", "scale1", "translate1"]
 }

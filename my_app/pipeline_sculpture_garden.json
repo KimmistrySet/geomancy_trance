@@ -1,22 +1,16 @@
 {
   "nodes": [
-    { "type": "CubeNode", "id": "cube1" },
-    { "type": "NoiseNode", "id": "cube_noise", "params": { "scale": 0.2, "seed": 1 } },
-
-    { "type": "SphereNode", "id": "sphere1", "params": { "radius": 1.0, "segments": 12 } },
-    { "type": "NoiseNode", "id": "sphere_noise", "params": { "scale": 0.15, "seed": 2 } },
-
-    { "type": "PyramidNode", "id": "pyramid1", "params": { "height": 1.5 } },
-    { "type": "NoiseNode", "id": "pyramid_noise", "params": { "scale": 0.25, "seed": 3 } },
-
-    { "type": "CylinderNode", "id": "cylinder1", "params": { "radius": 1.0, "height": 2.0, "segments": 16 } },
-    { "type": "NoiseNode", "id": "cylinder_noise", "params": { "scale": 0.1, "seed": 4 } }
+    {"id": "plane1", "type": "PlaneNode", "params": {"width": 10, "height": 10, "divisions": 20}},
+    {"id": "scatter1", "type": "ScatterNode", "params": {"count": 50, "range_x": 10, "range_y": 10, "range_z": 5}},
+    {"id": "torus1", "type": "TorusNode", "params": {"major_radius": 1.5, "minor_radius": 0.5, "segments": 24, "rings": 12}},
+    {"id": "rotate1", "type": "RotateNode", "params": {"axis": "y", "angle": 0.785}}, 
+    {"id": "mirror1", "type": "MirrorNode", "params": {"axis": "x"}}
   ],
   "connections": [
-    { "from": "cube1", "output": "Vertices", "to": "cube_noise", "input": "Vertices" },
-    { "from": "sphere1", "output": "Vertices", "to": "sphere_noise", "input": "Vertices" },
-    { "from": "pyramid1", "output": "Vertices", "to": "pyramid_noise", "input": "Vertices" },
-    { "from": "cylinder1", "output": "Vertices", "to": "cylinder_noise", "input": "Vertices" }
+    {"from": "plane1", "to": "scatter1"},
+    {"from": "scatter1", "to": "torus1"},
+    {"from": "torus1", "to": "rotate1"},
+    {"from": "rotate1", "to": "mirror1"}
   ],
-  "output_node": "cylinder_noise"
+  "output_node": "mirror1"
 }

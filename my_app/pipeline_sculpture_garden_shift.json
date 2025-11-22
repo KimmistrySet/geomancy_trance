@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {"id": "plane1", "type": "PlaneNode", "params": {"width": 20, "height": 20, "divisions": 30}},
+    {"id": "scatter1", "type": "ScatterNode", "params": {"count": 100, "range_x": 20, "range_y": 20, "range_z": 10}},
+    
+    {"id": "sphere1", "type": "SphereNode", "params": {"radius": 0.5, "segments": 16}},
+    {"id": "torus1", "type": "TorusNode", "params": {"major_radius": 1.5, "minor_radius": 0.3, "segments": 24, "rings": 12}},
+    {"id": "cone1", "type": "ConeNode", "params": {"radius": 0.4, "height": 1.2, "segments": 12}},
+    
+    {"id": "rotate1", "type": "RotateNode", "params": {"axis": "y", "angle": 0.785}},
+    {"id": "rotate2", "type": "RotateNode", "params": {"axis": "x", "angle": 1.047}},
+    {"id": "scale1", "type": "ScaleNode", "params": {"sx": 1.5, "sy": 0.7, "sz": 1.0}},
+    {"id": "translate1", "type": "TranslaterNode", "params": {"tx": 0, "ty": 0, "tz": 3}},
+    {"id": "mirror1", "type": "MirrorNode", "params": {"axis": "z"}}
+  ],
+  "connections": [
+    {"from": "plane1", "to": "scatter1"},
+    
+    {"from": "scatter1", "to": "sphere1"},
+    {"from": "scatter1", "to": "torus1"},
+    {"from": "scatter1", "to": "cone1"},
+    
+    {"from": "sphere1", "to": "rotate1"},
+    {"from": "torus1", "to": "rotate2"},
+    {"from": "cone1", "to": "scale1"},
+    
+    {"from": "rotate1", "to": "translate1"},
+    {"from": "rotate2", "to": "mirror1"},
+    {"from": "scale1", "to": "mirror1"}
+  ],
+  "output_nodes": ["translate1", "mirror1"]
+}

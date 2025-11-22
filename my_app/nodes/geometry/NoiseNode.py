@@ -1,30 +1,22 @@
-import numpy as np
 from nodes.node_base import Node
-
+import numpy as np
 
 class NoiseNode(Node):
-    """
-    Applies Perlin-style noise or random distortion to geometry vertices.
-    Useful for terrain, organic shapes, or procedural variation.
-    """
-    def __init__(self, node_id: str, scale: float = 0.1, seed: int = None):
-        super().__init__(node_id, "Noise")
-        self.inputs['Vertices'] = None
+    def __init__(self, node_id: str, count: int = 50, scale: float = 1.0, seed: int = None):
+        """
+        NoiseNode generates a set of random 3D points.
+        - node_id: unique identifier
+        - count: number of points to generate
+        - scale: multiplier for noise amplitude
+        - seed: optional random seed for reproducibility
+        """
+        super().__init__(node_id)
+        self.count = count
         self.scale = scale
         self.seed = seed
-        self.outputs['NoisyVertices'] = None
 
-    def evaluate(self, graph_data: dict) -> list[list[float]]:
-        vertices = resolve_input(self.id, 'Vertices', graph_data)
-        arr = np.array(vertices, dtype=np.float32)
-
-        # Optional reproducibility
+    def evaluate(self, context):
         if self.seed is not None:
             np.random.seed(self.seed)
-
-        # Add random noise scaled by factor
-        noise = (np.random.rand(*arr.shape) - 0.5) * 2 * self.scale
-        noisy = arr + noise
-
-        self.outputs['NoisyVertices'] = noisy.tolist()
-        return noisy.tolist()
+        pts = np.random.randn(self.count, 3) * self.scale
+        return pts

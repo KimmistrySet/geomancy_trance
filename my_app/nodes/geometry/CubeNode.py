@@ -1,25 +1,16 @@
-import numpy as np
 from nodes.node_base import Node
-
+import numpy as np
 
 class CubeNode(Node):
-    """
-    Generates a unit cube mesh (8 vertices).
-    """
-    def __init__(self, node_id: str):
-        super().__init__(node_id, "Cube")
-        self.outputs['Vertices'] = None
+    def __init__(self, node_id: str, width: float = 1.0, height: float = 1.0, depth: float = 1.0, size: float = None):
+        super().__init__(node_id)
+        if size is not None:
+            width = height = depth = size
+        self.width, self.height, self.depth = width, height, depth
 
-    def evaluate(self, graph_data: dict) -> list[list[float]]:
-        vertices = [
-            [-0.5, -0.5, -0.5],
-            [ 0.5, -0.5, -0.5],
-            [ 0.5,  0.5, -0.5],
-            [-0.5,  0.5, -0.5],
-            [-0.5, -0.5,  0.5],
-            [ 0.5, -0.5,  0.5],
-            [ 0.5,  0.5,  0.5],
-            [-0.5,  0.5,  0.5],
-        ]
-        self.outputs['Vertices'] = vertices
-        return vertices
+    def evaluate(self, context):
+        w, h, d = self.width / 2, self.height / 2, self.depth / 2
+        return np.array([
+            [-w, -h, -d], [ w, -h, -d], [ w,  h, -d], [-w,  h, -d],
+            [-w, -h,  d], [ w, -h,  d], [ w,  h,  d], [-w,  h,  d],
+        ])

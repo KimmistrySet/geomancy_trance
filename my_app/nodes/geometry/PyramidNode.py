@@ -1,23 +1,18 @@
 from nodes.node_base import Node
-
+import numpy as np
 
 class PyramidNode(Node):
-    """
-    Generates a simple pyramid mesh (square base + apex).
-    """
-    def __init__(self, node_id: str, height: float = 1.0):
-        super().__init__(node_id, "Pyramid")
-        self.height = height
-        self.outputs['Vertices'] = None
+    def __init__(self, node_id: str, base: float = 1.0, height: float = 1.0):
+        super().__init__(node_id)
+        self.base, self.height = base, height
 
-    def evaluate(self, graph_data: dict) -> list[list[float]]:
-        base = [
-            [-0.5, -0.5, 0],
-            [ 0.5, -0.5, 0],
-            [ 0.5,  0.5, 0],
-            [-0.5,  0.5, 0],
-        ]
-        apex = [0, 0, self.height]
-        vertices = base + [apex]
-        self.outputs['Vertices'] = vertices
-        return vertices
+    def evaluate(self, context):
+        half = self.base / 2.0
+        base_vertices = np.array([
+            [-half, -half, 0],
+            [ half, -half, 0],
+            [ half,  half, 0],
+            [-half,  half, 0]
+        ])
+        apex = np.array([[0, 0, self.height]])
+        return np.vstack([base_vertices, apex])

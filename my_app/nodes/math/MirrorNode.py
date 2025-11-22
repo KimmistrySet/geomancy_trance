@@ -3,8 +3,11 @@ import numpy as np
 
 class MirrorNode(Node):
     def __init__(self, node_id: str, axis: str = "x"):
+        """
+        Mirror vertices across a chosen axis (x, y, or z).
+        """
         super().__init__(node_id)
-        self.axis = axis
+        self.axis = axis.lower()
 
     def evaluate(self, context):
         if not context:

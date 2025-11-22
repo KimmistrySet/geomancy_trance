@@ -3,6 +3,9 @@ import numpy as np
 
 class TranslaterNode(Node):
     def __init__(self, node_id: str, tx: float = 0.0, ty: float = 0.0, tz: float = 0.0):
+        """
+        Translate vertices by tx, ty, tz.
+        """
         super().__init__(node_id)
         self.tx, self.ty, self.tz = tx, ty, tz
 

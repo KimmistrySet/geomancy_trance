@@ -1,29 +1,17 @@
-import numpy as np
 from nodes.node_base import Node
-
+import numpy as np
 
 class TerrainNode(Node):
-    """
-    Generates a terrain mesh from a numeric data column.
-    Each value maps to vertex height in a grid.
-    """
-    def __init__(self, node_id: str, grid_size: int = 10):
-        super().__init__(node_id, "Terrain")
-        self.inputs['DataColumn'] = None
-        self.grid_size = grid_size
-        self.outputs['Vertices'] = None
+    def __init__(self, node_id: str, width: int = 10, depth: int = 10, scale: float = 1.0):
+        super().__init__(node_id)
+        self.width, self.depth, self.scale = width, depth, scale
 
-    def evaluate(self, graph_data: dict) -> list[list[float]]:
-        data = resolve_input(self.id, 'DataColumn', graph_data)
-        norm = (np.array(data) - np.min(data)) / (np.max(data) - np.min(data))
-
-        vertices = []
-        idx = 0
-        for x in range(self.grid_size):
-            for y in range(self.grid_size):
-                z = float(norm[idx % len(norm)])
-                vertices.append([x, y, z])
-                idx += 1
-
-        self.outputs['Vertices'] = vertices
-        return vertices
+    def evaluate(self, context):
+        xs = np.linspace(-self.width/2, self.width/2, self.width)
+        zs = np.linspace(-self.depth/2, self.depth/2, self.depth)
+        verts = []
+        for x in xs:
+            for z in zs:
+                y = np.sin(x*0.2) * np.cos(z*0.2) * self.scale
+                verts.append([x,y,z])
+        return np.array(verts)

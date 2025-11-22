@@ -3,6 +3,9 @@ import numpy as np
 
 class ScaleNode(Node):
     def __init__(self, node_id: str, sx: float = 1.0, sy: float = 1.0, sz: float = 1.0):
+        """
+        Scale vertices along x, y, z axes.
+        """
         super().__init__(node_id)
         self.sx, self.sy, self.sz = sx, sy, sz
 

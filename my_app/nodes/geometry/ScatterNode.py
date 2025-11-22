@@ -4,10 +4,7 @@ import numpy as np
 class ScatterNode(Node):
     def __init__(self, node_id: str, count: int = 50, range_x: float = 5.0, range_y: float = 5.0, range_z: float = 5.0):
         super().__init__(node_id)
-        self.count = count
-        self.range_x = range_x
-        self.range_y = range_y
-        self.range_z = range_z
+        self.count, self.range_x, self.range_y, self.range_z = count, range_x, range_y, range_z
 
     def evaluate(self, context):
         pts = np.random.rand(self.count, 3)

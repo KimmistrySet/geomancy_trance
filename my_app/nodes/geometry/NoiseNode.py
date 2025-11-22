@@ -1,6 +1,6 @@
 import numpy as np
-from core.node_base import Node
-from core.execution_engine import resolve_input
+from nodes.node_base import Node
+
 
 class NoiseNode(Node):
     """

@@ -1,5 +1,6 @@
 import numpy as np
-from core.node_base import Node
+from nodes.node_base import Node
+
 
 class Matrix4x4Node(Node):
     """

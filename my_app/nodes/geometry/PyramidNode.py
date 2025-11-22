@@ -1,4 +1,5 @@
-from core.node_base import Node
+from nodes.node_base import Node
+
 
 class PyramidNode(Node):
     """

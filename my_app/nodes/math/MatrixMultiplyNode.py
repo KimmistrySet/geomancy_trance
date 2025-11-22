@@ -1,4 +1,6 @@
 import numpy as np
+from nodes.node_base import Node
+
 
 
 class MatrixMultiplyNode(Node):

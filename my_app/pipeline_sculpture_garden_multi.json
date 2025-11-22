@@ -1,0 +1,22 @@
+{
+  "nodes": [
+    { "type": "CubeNode", "id": "cube1" },
+    { "type": "NoiseNode", "id": "cube_noise", "params": { "scale": 0.2, "seed": 1 } },
+
+    { "type": "SphereNode", "id": "sphere1", "params": { "radius": 1.0, "segments": 12 } },
+    { "type": "NoiseNode", "id": "sphere_noise", "params": { "scale": 0.15, "seed": 2 } },
+
+    { "type": "PyramidNode", "id": "pyramid1", "params": { "height": 1.5 } },
+    { "type": "NoiseNode", "id": "pyramid_noise", "params": { "scale": 0.25, "seed": 3 } },
+
+    { "type": "CylinderNode", "id": "cylinder1", "params": { "radius": 1.0, "height": 2.0, "segments": 16 } },
+    { "type": "NoiseNode", "id": "cylinder_noise", "params": { "scale": 0.1, "seed": 4 } }
+  ],
+  "connections": [
+    { "from": "cube1", "output": "Vertices", "to": "cube_noise", "input": "Vertices" },
+    { "from": "sphere1", "output": "Vertices", "to": "sphere_noise", "input": "Vertices" },
+    { "from": "pyramid1", "output": "Vertices", "to": "pyramid_noise", "input": "Vertices" },
+    { "from": "cylinder1", "output": "Vertices", "to": "cylinder_noise", "input": "Vertices" }
+  ],
+  "output_nodes": ["cube_noise", "sphere_noise", "pyramid_noise", "cylinder_noise"]
+}

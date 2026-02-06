@@ -74,10 +74,11 @@ def run_pipeline_from_file(filename: str) -> Union[List[List[float]], Dict[str, 
             
         # Update node params with dynamic inputs
         # (Assuming your Node class has a method to update inputs, or you pass them to evaluate)
-        results[nid] = node.evaluate(inputs=node_inputs) 
+       results[nid] = node.evaluate(node_inputs) 
 
     # (Return logic remains the same)
     output_node = pipeline.get("output_node")
     if output_node:
         return _to_json_safe(results[output_node])
     return _to_json_safe(results[list(results.keys())[-1]])
+

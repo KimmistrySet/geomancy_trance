@@ -1,91 +1,20 @@
-# autogen.py
 import os
 import json
 from typing import Dict, Any, List, Union
 import numpy as np
+# (Keep your node imports here...)
 
-# --- Node imports based on your folder structure ---
-from nodes.node_base import Node
-
-# Geometry nodes
-from nodes.geometry.CubeNode import CubeNode
-from nodes.geometry.CylinderNode import CylinderNode
-from nodes.geometry.SphereNode import SphereNode
-from nodes.geometry.PyramidNode import PyramidNode
-from nodes.geometry.NoiseNode import NoiseNode
-from nodes.geometry.TerrainNode import TerrainNode
-from nodes.geometry.ConeNode import ConeNode
-from nodes.geometry.TorusNode import TorusNode
-from nodes.geometry.PlaneNode import PlaneNode
-from nodes.geometry.ScatterNode import ScatterNode
-from nodes.geometry.GridNode import GridNode
-
-# Math nodes
-from nodes.math.Matrix4x4Node import Matrix4x4Node
-from nodes.math.MatrixMultiplyNode import MatrixMultiplyNode
-from nodes.math.VectorMatrixNode import VectorMatrixMultiplyNode
-from nodes.math.TransformNode import TransformNode
-from nodes.math.ScaleNode import ScaleNode
-from nodes.math.RotateNode import RotateNode
-from nodes.math.TranslaterNode import TranslaterNode
-from nodes.math.MirrorNode import MirrorNode
-# Add more math nodes here as needed
-
-# --- Registry mapping JSON "type" strings to actual classes ---
-NODE_REGISTRY: Dict[str, Any] = {
-    "CubeNode": CubeNode,
-    "CylinderNode": CylinderNode,
-    "SphereNode": SphereNode,
-    "NoiseNode": NoiseNode,
-    "PyramidNode": PyramidNode,
-    "TerrainNode": TerrainNode,
-    "ConeNode": ConeNode,
-    "TorusNode": TorusNode,
-    "PlaneNode": PlaneNode,
-    "ScatterNode": ScatterNode,
-    "GridNode": GridNode,
-    "Matrix4x4Node": Matrix4x4Node,
-    "MatrixMultiplyNode": MatrixMultiplyNode,
-    "VectorMatrixMultiplyNode": VectorMatrixMultiplyNode,
-    "TransformNode": TransformNode,
-    "ScaleNode": ScaleNode,
-    "RotateNode": RotateNode,
-    "TranslaterNode": TranslaterNode,
-    "MirrorNode": MirrorNode,
-    # Add other node types here
-}
-
-def _root_path(filename: str) -> str:
-    """Resolve file path relative to this file."""
-    return os.path.join(os.path.dirname(__file__), filename)
-
-def _to_json_safe(x: Any) -> Any:
-    """Convert outputs to JSON-serializable structures."""
-    if isinstance(x, np.ndarray):
-        return x.tolist()
-    if isinstance(x, (set, tuple)):
-        return list(x)
-    if isinstance(x, dict):
-        return {k: _to_json_safe(v) for k, v in x.items()}
-    if isinstance(x, list):
-        return [_to_json_safe(v) for v in x]
-    return x
+# (Keep your NODE_REGISTRY and helper functions here...)
 
 def run_pipeline_from_file(filename: str) -> Union[List[List[float]], Dict[str, List[List[float]]]]:
-    """
-    Execute a declarative pipeline defined in a JSON file.
-    Supports single output via "output_node" or multiple via "output_nodes".
-    """
     path = _root_path(filename)
     with open(path, "r") as f:
         pipeline = json.load(f)
 
     nodes_def = pipeline.get("nodes", [])
-    connections = pipeline.get("connections", [])
-    output_node = pipeline.get("output_node")
-    output_nodes = pipeline.get("output_nodes", [])
-
-    # Build node instances
+    connections = pipeline.get("connections", []) # List of {source_node, source_socket, target_node, target_socket}
+    
+    # 1. Instantiate Nodes
     instances: Dict[str, Node] = {}
     for n in nodes_def:
         nid = n["id"]
@@ -93,18 +22,62 @@ def run_pipeline_from_file(filename: str) -> Union[List[List[float]], Dict[str, 
         params = n.get("params", {})
         ctor = NODE_REGISTRY.get(ntype)
         if ctor is None:
-            raise ValueError(f"Unknown node type '{ntype}' for node '{nid}'")
+            raise ValueError(f"Unknown node type '{ntype}'")
         instances[nid] = ctor(node_id=nid, **params)
 
-    # Execute nodes in declared order (simplified)
-    results: Dict[str, Any] = {}
-    for nid, node in instances.items():
-        results[nid] = node.evaluate(context=results)
+    # 2. Build Dependency Graph (Who waits for whom?)
+    # adjacency = { "target_node_id": ["source_node_id", "source_node_id"] }
+    dependencies = {n["id"]: set() for n in nodes_def}
+    
+    # Map connections to node inputs
+    # input_map = { "target_node_id": { "target_input_name": "source_node_id" } }
+    input_map = {n["id"]: {} for n in nodes_def}
 
-    # Return outputs
+    for conn in connections:
+        source_id = conn["source"]
+        target_id = conn["target"]
+        target_input = conn["target_input"] # e.g., "geometry" or "mask"
+        
+        dependencies[target_id].add(source_id)
+        input_map[target_id][target_input] = source_id
+
+    # 3. Topological Sort (The "Garden Logic")
+    execution_order = []
+    visited = set()
+    temp_mark = set()
+
+    def visit(nid):
+        if nid in temp_mark:
+            raise ValueError("Cycle detected! Nodes point to each other in a loop.")
+        if nid not in visited:
+            temp_mark.add(nid)
+            for dependency in dependencies[nid]:
+                visit(dependency)
+            temp_mark.remove(nid)
+            visited.add(nid)
+            execution_order.append(nid)
+
+    for nid in instances:
+        visit(nid)
+    
+    # 4. Execute in Correct Order
+    results: Dict[str, Any] = {}
+    
+    for nid in execution_order:
+        node = instances[nid]
+        
+        # Inject inputs from previous nodes
+        node_inputs = {}
+        for input_name, source_nid in input_map[nid].items():
+            # Pass the OUTPUT of the source node as the INPUT for this node
+            node_inputs[input_name] = results[source_nid]
+            
+        # Update node params with dynamic inputs
+        # (Assuming your Node class has a method to update inputs, or you pass them to evaluate)
+        results[nid] = node.evaluate(inputs=node_inputs) 
+
+    # (Return logic remains the same)
+    output_node = pipeline.get("output_node")
     if output_node:
         return _to_json_safe(results[output_node])
-    if output_nodes:
-        return {nid: _to_json_safe(results[nid]) for nid in output_nodes}
-    last = list(results.keys())[-1]
-    return _to_json_safe(results[last])
+    return _to_json_safe(results[list(results.keys())[-1]])

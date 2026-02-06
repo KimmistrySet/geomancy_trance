@@ -33,10 +33,13 @@ def run_pipeline_from_file(filename: str) -> Union[List[List[float]], Dict[str, 
     # input_map = { "target_node_id": { "target_input_name": "source_node_id" } }
     input_map = {n["id"]: {} for n in nodes_def}
 
-    for conn in connections:
-        source_id = conn["source"]
-        target_id = conn["target"]
-        target_input = conn["target_input"] # e.g., "geometry" or "mask"
+   for conn in connections:
+        # Match the keys used in your JSON files ("from" / "to")
+        source_id = conn["from"]
+        target_id = conn["to"]
+        
+        # Handle cases where input name isn't specified (defaulting to generic)
+        target_input = conn.get("input", "geometry") 
         
         dependencies[target_id].add(source_id)
         input_map[target_id][target_input] = source_id
@@ -81,4 +84,5 @@ def run_pipeline_from_file(filename: str) -> Union[List[List[float]], Dict[str, 
     if output_node:
         return _to_json_safe(results[output_node])
     return _to_json_safe(results[list(results.keys())[-1]])
+
 
